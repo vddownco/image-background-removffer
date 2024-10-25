@@ -18,31 +18,20 @@
 <section class="bg-white dark:bg-gray-900">
   <div class="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-6 ">
       <div class="mx-auto max-w-screen-sm text-center mb-8 lg:mb-16">
-          <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">Our Team</h2>
-          <p class="font-light text-gray-500 lg:mb-16 sm:text-xl dark:text-gray-400">Explore the whole collection of open-source web components and elements built with the utility classes from Tailwind</p>
+          <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">Background remover</h2>
+          <p class="font-light text-gray-500 lg:mb-16 sm:text-xl dark:text-gray-400">Erase image backgrounds for free</p>
       </div> 
-      <div class="grid gap-8 mb-6 lg:mb-16 md:grid-cols-2">
-          <div class="items-center bg-gray-50 rounded-lg shadow sm:flex dark:bg-gray-800 dark:border-gray-700">
-              <a href="#">
-                  <img class="w-full rounded-lg sm:rounded-none sm:rounded-l-lg" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/bonnie-green.png" alt="Bonnie Avatar">
-              </a>
-          </div> 
-          <div class="items-center bg-gray-50 rounded-lg shadow sm:flex dark:bg-gray-800 dark:border-gray-700">
-              <a href="#">
-                  <img class="w-full rounded-lg sm:rounded-none sm:rounded-l-lg" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/jese-leos.png" alt="Jese Avatar">
-              </a>
-          </div> 
-          <!-- <div class="items-center bg-gray-50 rounded-lg shadow sm:flex dark:bg-gray-800 dark:border-gray-700">
-              <a href="#">
-                  <img class="w-full rounded-lg sm:rounded-none sm:rounded-l-lg" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/michael-gouch.png" alt="Michael Avatar">
-              </a>
-          </div> 
-          <div class="items-center bg-gray-50 rounded-lg shadow sm:flex dark:bg-gray-800 dark:border-gray-700">
-              <a href="#">
-                  <img class="w-full rounded-lg sm:rounded-none sm:rounded-l-lg" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/sofia-mcguire.png" alt="Sofia Avatar">
-              </a>
-          </div>   -->
-      </div>  
+      <div class="grid place-items-center grid-cols-2 gap-4">
+      <div class="text-center">
+      <p class="font-semibold mb-2">Before</p>
+      <img class="h-auto max-w-full rounded-lg" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/jese-leos.png" alt="Jese Avatar">
+      </div>
+
+      <div class="text-center">
+      <p class="font-semibold mb-2">After</p>
+      <img class="h-auto max-w-full rounded-lg" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/jese-leos.png" alt="Jese Avatar">
+      </div>
+    </div>  
   </div>
 </section>
 </body>
