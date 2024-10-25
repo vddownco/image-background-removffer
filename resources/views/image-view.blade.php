@@ -42,8 +42,8 @@
             class="py-2.5 px-5 me-2 my-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100">Switch
             on camera</button>
 
-          <!-- ------------------------------------Submit button--------------------------------- -->
-          <form id="captureForm" method="POST" action="">
+          <!-- ------------------------------------Submit form for webcam image--------------------------------- -->
+          <form id="captureForm" method="POST" action="{{route('remove.background')}}">
             @csrf
             <input type="hidden" name="image" id="captured_image">
             <button type="submit" id="removeBackgroundButton"
