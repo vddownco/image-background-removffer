@@ -12,28 +12,43 @@
   <!-- Styles / Scripts -->
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-  <!-- webcamjs for allowing sites to access device webcam -->
+  <!-- Webcamjs for allowing sites to access device webcam -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/webcamjs/1.0.26/webcam.min.js"
     integrity="sha512-dQIiHSl2hr3NWKKLycPndtpbh5iaHLo6MwrXm7F0FM5e+kL2U16oE9uIwPHUl6fQBeCthiEuV/rzP3MiAB8Vfw=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 
 <body>
-  <section class="bg-white dark:bg-gray-900">
+  <section class="bg-white">
     <div class="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-6 ">
       <div class="mx-auto max-w-screen-sm text-center mb-8 lg:mb-16">
-        <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">Background remover</h2>
-        <p class="font-light text-gray-500 lg:mb-16 sm:text-xl dark:text-gray-400">Erase image backgrounds for free</p>
+        <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-gray-900">Background remover</h2>
+        <p class="font-light text-gray-500 lg:mb-16 sm:text-xl">Erase image backgrounds for free</p>
       </div>
       <div class="grid lg:grid-cols-3 md:grid-cols-3 grid-cols-1 place-items-center">
 
         <!-- --------------------------------------webcam section----------------------------------- -->
         <div class="text-center">
           <p class="font-semibold mb-2">Take a picture</p>
-          <div id="my_camera" class="h-auto max-w-full rounded-lg"></div>
+          <div id="webcam" class="webcam-container h-auto max-w-full rounded-lg">
+            <img id="cameraThumbnail" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/jese-leos.png"
+              alt="Jese Avatar">
+          </div>
           <!-- <img class="h-auto max-w-full rounded-lg"
             src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/jese-leos.png" alt="Jese Avatar"> -->
-          <button type="button" onclick="takeSnapshot()"
+          <button type="button" onclick="takeSnapshot()" id="captureButton"
+            class="text-gray-900 hidden bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center items-center me-2 my-2">
+            <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+              width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+              <path fill-rule="evenodd"
+                d="M7.5 4.586A2 2 0 0 1 8.914 4h6.172a2 2 0 0 1 1.414.586L17.914 6H19a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h1.086L7.5 4.586ZM10 12a2 2 0 1 1 4 0 2 2 0 0 1-4 0Zm2-4a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z"
+                clip-rule="evenodd" />
+            </svg>
+
+            take picture
+          </button>
+
+          <button type="button" id="activateCameraButton"
             class="text-gray-900 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2 my-2">
             <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
               width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
@@ -42,7 +57,7 @@
                 clip-rule="evenodd" />
             </svg>
 
-            capture
+            turn on camera
           </button>
         </div>
 
@@ -91,14 +106,28 @@
   </section>
 
   <script>
-    // Setup Webcam
+    const cameraThumbnail = document.getElementById('cameraThumbnail');
+    const activateCameraButton = document.getElementById('activateCameraButton');
+    const captureButton = document.getElementById('captureButton');
+
+    // Webcam config
     Webcam.set({
       width: 320,
       height: 240,
       image_format: 'jpeg',
       jpeg_quality: 100
     });
-    Webcam.attach('#my_camera');
+
+    // Function to activate the camera on button click
+    activateCameraButton.addEventListener('click', function () {
+      // Hide the activate button and show the capture button
+      activateCameraButton.style.display = 'none';
+      captureButton.style.display = 'inline-flex';
+
+      // Hide img and activate webcam
+      cameraThumbnail.style.display = 'none';
+      Webcam.attach('#webcam');
+    });
   </script>
 </body>
 
