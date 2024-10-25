@@ -34,31 +34,19 @@
             <img id="cameraThumbnail" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/jese-leos.png"
               alt="Jese Avatar">
           </div>
-          <!-- <img class="h-auto max-w-full rounded-lg"
-            src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/jese-leos.png" alt="Jese Avatar"> -->
-          <button type="button" onclick="takeSnapshot()" id="captureButton"
-            class="text-gray-900 hidden bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center items-center me-2 my-2">
-            <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-              width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-              <path fill-rule="evenodd"
-                d="M7.5 4.586A2 2 0 0 1 8.914 4h6.172a2 2 0 0 1 1.414.586L17.914 6H19a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h1.086L7.5 4.586ZM10 12a2 2 0 1 1 4 0 2 2 0 0 1-4 0Zm2-4a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z"
-                clip-rule="evenodd" />
-            </svg>
 
-            take picture
-          </button>
+          <button type="button" onclick="takeSnapshot()" id="captureButton"
+            class="hidden py-2.5 px-5 me-2 my-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100">Capture</button>
 
           <button type="button" id="activateCameraButton"
-            class="text-gray-900 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2 my-2">
-            <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-              width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-              <path fill-rule="evenodd"
-                d="M7.5 4.586A2 2 0 0 1 8.914 4h6.172a2 2 0 0 1 1.414.586L17.914 6H19a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h1.086L7.5 4.586ZM10 12a2 2 0 1 1 4 0 2 2 0 0 1-4 0Zm2-4a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z"
-                clip-rule="evenodd" />
-            </svg>
+            class="py-2.5 px-5 me-2 my-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100">Switch
+            on camera</button>
 
-            turn on camera
-          </button>
+          <!-- ------------------------------------Submit button--------------------------------- -->
+          <button type="button" id="removeBackgroundButton"
+            class="hidden focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 my-3">Remove
+            bg</button>
+
         </div>
 
         <!-- --------------------------------------Center text----------------------------------- -->
@@ -109,6 +97,7 @@
     const cameraThumbnail = document.getElementById('cameraThumbnail');
     const activateCameraButton = document.getElementById('activateCameraButton');
     const captureButton = document.getElementById('captureButton');
+    const removeBackgroundButton = document.getElementById('removeBackgroundButton');
 
     // Webcam config
     Webcam.set({
@@ -122,12 +111,36 @@
     activateCameraButton.addEventListener('click', function () {
       // Hide the activate button and show the capture button
       activateCameraButton.style.display = 'none';
+      removeBackgroundButton.style.display = 'none';
       captureButton.style.display = 'inline-flex';
 
       // Hide img and activate webcam
       cameraThumbnail.style.display = 'none';
       Webcam.attach('#webcam');
     });
+
+    // Turn off the camera without removing the DOM element
+    function turnOffCamera() {
+      if (Webcam.stream) {  // Check if the webcam stream is active
+        Webcam.stream.getTracks().forEach(track => track.stop()); // Stop each track
+      }
+    }
+
+    function takeSnapshot() {
+      Webcam.snap(function (data_uri) {
+        document.getElementById('webcam').innerHTML =
+          '<img src="' + data_uri + '"/>';
+        turnOffCamera();
+        //document.getElementById('captured_image').value = data_uri;
+        //document.getElementById('captureForm').submit();
+      });
+
+      activateCameraButton.style.display = 'inline-flex';
+      captureButton.style.display = 'none';
+      removeBackgroundButton.style.display = 'inline-flex';
+
+      activateCameraButton.innerHTML = "Retake"
+    }
   </script>
 </body>
 
