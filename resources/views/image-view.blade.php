@@ -115,8 +115,8 @@
 
     // Turn off the camera without removing the DOM element
     function turnOffCamera() {
-      if (Webcam.stream) {  // Check if the webcam stream is active
-        Webcam.stream.getTracks().forEach(track => track.stop()); // Stop each track
+      if (Webcam.stream) {
+        Webcam.stream.getTracks().forEach(track => track.stop());
       }
     }
 
@@ -125,8 +125,9 @@
         document.getElementById('webcam').innerHTML =
           '<img src="' + data_uri + '"/>';
         turnOffCamera();
-        //document.getElementById('captured_image').value = data_uri;
-        //document.getElementById('captureForm').submit();
+
+        let raw_image_data = data_uri.replace(/^data\:image\/\w+\;base64\,/, '');
+        document.getElementById('captured_image').value = raw_image_data;
       });
 
       activateCameraButton.style.display = 'inline-flex';
