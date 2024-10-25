@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ImageController;
+use App\Livewire\ImageView;
 
-Route::get('/', [ImageController::class, 'viewPage']);
-Route::post('/remove-background', [ImageController::class, 'removeBackground'])->name('remove.background');
+Route::get('/', ImageView::class);
+//Route::post('/remove-background', [ImageController::class, 'removeBackground'])->name('remove.background');
