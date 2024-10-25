@@ -23,7 +23,7 @@
             on camera</button>
 
           <!-- ------------------------------------Submit form for webcam image--------------------------------- -->
-          <form id="captureForm" method="POST" action="{{route('remove.background')}}">
+          <form id="captureForm">
             @csrf
             <input type="hidden" name="image" id="captured_image">
             <button type="submit" id="removeBackgroundButton"
