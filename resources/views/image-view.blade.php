@@ -31,8 +31,8 @@
         <div class="text-center">
           <p class="font-semibold mb-2">Take a picture</p>
           <div id="webcam" class="webcam-container h-auto max-w-full rounded-lg">
-            <img id="cameraThumbnail" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/jese-leos.png"
-              alt="Jese Avatar">
+            <img id="cameraThumbnail" class="h-auto max-w-full rounded-lg"
+              src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/jese-leos.png" alt="Jese Avatar">
           </div>
 
           <button type="button" onclick="takeSnapshot()" id="captureButton"
@@ -85,6 +85,25 @@
         </div>
       </div>
     </div>
+
+    <!-- ----------------Image gallery for viewing images after bg removal----------------- -->
+    <div class="px-4 pb-8 mx-auto max-w-screen-xl lg:px-6 ">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div>
+          <img class="h-auto max-w-full rounded-lg"
+            src="https://flowbite.s3.amazonaws.com/docs/gallery/square/image.jpg" alt="">
+        </div>
+        <div>
+          <img class="h-auto max-w-full rounded-lg"
+            src="https://flowbite.s3.amazonaws.com/docs/gallery/square/image-1.jpg" alt="">
+        </div>
+        <div>
+          <img class="h-auto max-w-full rounded-lg"
+            src="https://flowbite.s3.amazonaws.com/docs/gallery/square/image-2.jpg" alt="">
+        </div>
+      </div>
+    </div>
+
   </section>
 
   <script>
