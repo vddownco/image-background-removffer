@@ -7,7 +7,27 @@
             <!-- ---------Input section------- -->
             <div
                 class="flex flex-col justify-between items-center h-full w-full bg-white border-dashed border-2 border-gray-200 shadow-inner rounded">
-                <div id="inputZone" class="h-full w-full rounded">Hi</div>
+                <!-- ------------------Input zone-------------- -->
+                <div id="inputZone" class="h-full w-full rounded">
+                    <div id="fileDropZone" class="h-full w-full">
+                        <label for="dropzone-file"
+                            class="flex flex-col items-center justify-center h-full w-full cursor-pointer hover:bg-gray-200">
+                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                <svg class="w-8 h-8 mb-4 text-gray-500" aria-hidden="true"
+                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
+                                </svg>
+                                <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span>
+                                    or drag and
+                                    drop</p>
+                                <p class="text-xs text-gray-500">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
+                            </div>
+                            <input id="dropzone-file" type="file" class="hidden" />
+                        </label>
+                    </div>
+                </div>
                 <div
                     class="flex justify-center space-x-2 py-2 w-full bg-white border-solid border-t-2 border-gray-200 ">
                     <button id="activateCameraButton" class="text-gray-500 hover:text-amber-700 px-4 py-2 rounded">
@@ -55,6 +75,8 @@
     <script language="JavaScript">
         const activateCameraButton = document.getElementById('activateCameraButton');
         const captureButton = document.getElementById('captureButton');
+        const fileUploadButton = document.getElementById('fileUploadButton');
+        const fileDropZone = document.getElementById('fileDropZone');
         const inputZone = document.getElementById('inputZone');
 
         //Webcam setup
@@ -74,15 +96,12 @@
         activateCameraButton.addEventListener('click', function () {
             // Hide the activate button and show the capture button
             activateCameraButton.style.display = 'none';
-            //removeBackgroundButton.style.display = 'none';
             captureButton.style.display = 'inline-flex';
+            fileDropZone.style.display = 'none';
 
-            // Hide img and activate webcam
-            //cameraThumbnail.style.display = 'none';
-            inputZone.innerHTML = '';
-
-            Webcam.attach('#inputSection');
+            Webcam.attach('#inputZone');
         });
+
 
         // Turn off the camera without removing the DOM element
         function turnOffCamera() {
@@ -90,6 +109,16 @@
                 Webcam.stream.getTracks().forEach(track => track.stop());
             }
         }
+
+        // Function to show file drop zone
+        fileUploadButton.addEventListener('click', function () {
+            //turnOffCamera();
+            Webcam.reset();
+
+            fileDropZone.style.display = 'inline-flex';
+            activateCameraButton.style.display = 'inline-flex';
+            captureButton.style.display = 'none';
+        })
 
         //Capture image
         function take_snapshot() {
