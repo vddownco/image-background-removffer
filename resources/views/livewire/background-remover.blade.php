@@ -43,7 +43,7 @@
 
                     </button>
                     <button onclick="take_snapshot()" id="captureButton"
-                        class="text-gray-500 hover:text-amber-700 px-4 py-2 rounded hidden">
+                        class="text-gray-500 hover:text-amber-600 px-4 py-2 rounded hidden">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="size-6">
                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -53,7 +53,7 @@
                         </svg>
 
                     </button>
-                    <button id="fileUploadButton" class="text-gray-500 hover:text-amber-700 px-4 py-2 rounded">
+                    <button id="fileUploadButton" class="text-gray-500 hover:text-amber-600 px-4 py-2 rounded">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="size-6">
                             <path stroke-linecap="round" stroke-linejoin="round"
