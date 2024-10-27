@@ -68,9 +68,16 @@
         <!-- -----Result section------- -->
         <div class="flex justify-center items-center p-1 h-96 w-full rounded bg-gray-100">
             <div class="h-full w-full rounded bg-white border-solid border-2 border-gray-200 shadow-inner">
-
+                @if($maskedImageUrl)
+                    <img id="masked-image" src="{{ asset($maskedImageUrl) }}" alt="Uploaded image" class="h-full w-full" />
+                @else
+                    <div class="flex items-center justify-center w-full h-full">
+                        <div
+                            class="px-3 py-1 text-xs font-medium leading-none text-center text-blue-800 bg-blue-200 rounded-full animate-pulse dark:bg-blue-900 dark:text-blue-200">
+                            processing...</div>
+                    </div>
+                @endif
             </div>
-
         </div>
     </div>
 

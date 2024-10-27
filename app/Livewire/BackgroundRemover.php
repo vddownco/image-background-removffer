@@ -4,10 +4,13 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use App\Jobs\RemoveImageBackground;
+use Livewire\WithFileUploads;
 
 class BackgroundRemover extends Component
 {
+    use WithFileUploads;
     public $image;
+    public $maskedImageUrl;
 
     public function updated($property)
     {
