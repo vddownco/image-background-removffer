@@ -4,10 +4,10 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-y-4 md:gap-x-2 justify-items-center pt-5">
         <div class="flex justify-between items-center p-1 h-96 w-full rounded bg-gray-100">
 
-            <!-- ---------Webcam section------- -->
+            <!-- ---------Input section------- -->
             <div
                 class="flex flex-col justify-between items-center h-full w-full bg-white border-dashed border-2 border-gray-200 shadow-inner rounded">
-                <div id="my_camera" class="h-full w-full rounded"></div>
+                <div id="inputZone" class="h-full w-full rounded">Hi</div>
                 <div
                     class="flex justify-center space-x-2 py-2 w-full bg-white border-solid border-t-2 border-gray-200 ">
                     <button id="activateCameraButton" class="text-gray-500 hover:text-amber-700 px-4 py-2 rounded">
@@ -55,6 +55,7 @@
     <script language="JavaScript">
         const activateCameraButton = document.getElementById('activateCameraButton');
         const captureButton = document.getElementById('captureButton');
+        const inputZone = document.getElementById('inputZone');
 
         //Webcam setup
         Webcam.set({
@@ -78,7 +79,9 @@
 
             // Hide img and activate webcam
             //cameraThumbnail.style.display = 'none';
-            Webcam.attach('#my_camera');
+            inputZone.innerHTML = '';
+
+            Webcam.attach('#inputSection');
         });
 
         // Turn off the camera without removing the DOM element
