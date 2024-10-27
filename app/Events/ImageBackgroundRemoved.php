@@ -10,7 +10,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class ImageBackgroundRemoved
+class ImageBackgroundRemoved implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -30,7 +30,7 @@ class ImageBackgroundRemoved
     public function broadcastOn(): array
     {
         return [
-            new Channel($this->id),
+            new Channel('bg-removed'),
         ];
     }
 }

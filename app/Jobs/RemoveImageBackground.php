@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Storage;
 use Codewithkyrian\Transformers\Models\Auto\AutoModel;
 use Codewithkyrian\Transformers\Processors\AutoProcessor;
 use Codewithkyrian\Transformers\Utils\Image;
+use App\Events\ImageBackgroundRemoved;
 
 class RemoveImageBackground implements ShouldQueue
 {
@@ -49,5 +50,9 @@ class RemoveImageBackground implements ShouldQueue
 
         $maskedImage = $image->applyMask($mask);
         $maskedImage->save(Storage::disk('public')->path($maskedPath));
+
+        $maskedId = base64url_encode($maskedPath);
+
+        ImageBackgroundRemoved::dispatch($this->id, $maskedId);
     }
 }
