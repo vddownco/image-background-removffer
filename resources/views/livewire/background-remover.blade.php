@@ -8,7 +8,9 @@
             <div
                 class="flex flex-col justify-between items-center h-full w-full bg-white border-dashed border-2 border-gray-200 shadow-inner rounded">
                 <!-- ------------------Input zone-------------- -->
-                <div id="inputZone" class="h-full w-full rounded">
+                <div class="h-full w-full rounded">
+                    <!-- ------------------Webcam zone-------------- -->
+                    <div id="webcamZone" class="hidden h-full w-full"></div>
                     <div id="fileDropZone" class="h-full w-full">
                         <label for="dropzone-file"
                             class="flex flex-col items-center justify-center h-full w-full cursor-pointer hover:bg-gray-200">
@@ -41,7 +43,7 @@
 
                     </button>
                     <button onclick="take_snapshot()" id="captureButton"
-                        class="text-gray-500 hover:text-amber-700 hidden px-4 py-2 rounded">
+                        class="text-gray-500 hover:text-amber-700 px-4 py-2 rounded hidden">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="size-6">
                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -77,7 +79,7 @@
         const captureButton = document.getElementById('captureButton');
         const fileUploadButton = document.getElementById('fileUploadButton');
         const fileDropZone = document.getElementById('fileDropZone');
-        const inputZone = document.getElementById('inputZone');
+        const webcamZone = document.getElementById('webcamZone');
 
         //Webcam setup
         Webcam.set({
@@ -94,12 +96,23 @@
 
         // Function to activate the camera on button click
         activateCameraButton.addEventListener('click', function () {
-            // Hide the activate button and show the capture button
-            activateCameraButton.style.display = 'none';
-            captureButton.style.display = 'inline-flex';
-            fileDropZone.style.display = 'none';
+            if (!fileDropZone.classList.contains('hidden')) {
+                fileDropZone.classList.add('hidden');
+            }
 
-            Webcam.attach('#inputZone');
+            if (webcamZone.classList.contains('hidden')) {
+                webcamZone.classList.remove('hidden');
+            }
+
+            if (!activateCameraButton.classList.contains('hidden')) {
+                activateCameraButton.classList.add('hidden');
+            }
+
+            if (captureButton.classList.contains('hidden')) {
+                captureButton.classList.remove('hidden');
+            }
+
+            Webcam.attach('#webcamZone');
         });
 
 
@@ -112,18 +125,27 @@
 
         // Function to show file drop zone
         fileUploadButton.addEventListener('click', function () {
-            //turnOffCamera();
-            Webcam.reset();
+            turnOffCamera();
 
-            fileDropZone.style.display = 'inline-flex';
-            activateCameraButton.style.display = 'inline-flex';
-            captureButton.style.display = 'none';
+            if (!webcamZone.classList.contains('hidden')) {
+                webcamZone.classList.add('hidden');
+            }
+
+            if (fileDropZone.classList.contains('hidden')) {
+                fileDropZone.classList.remove('hidden');
+            }
+            if (activateCameraButton.classList.contains('hidden')) {
+                activateCameraButton.classList.remove('hidden');
+            }
+            if (!captureButton.classList.contains('hidden')) {
+                captureButton.classList.add('hidden');
+            }
         })
 
         //Capture image
         function take_snapshot() {
             Webcam.snap(function (data_uri) {
-                document.getElementById('my_camera').innerHTML = '<img src="' + data_uri + '"/>';
+                document.getElementById('webcamZone').innerHTML = '<img src="' + data_uri + '"/>';
                 turnOffCamera();
 
                 var raw_image_data = data_uri.replace(/^data\:image\/\w+\;base64\,/, '');
@@ -132,9 +154,13 @@
                 //document.getElementById('myform').submit();
             });
 
-            activateCameraButton.style.display = 'inline-flex';
-            captureButton.style.display = 'none';
+            if (activateCameraButton.classList.contains('hidden')) {
+                activateCameraButton.classList.remove('hidden');
+            }
 
+            if (!captureButton.classList.contains('hidden')) {
+                captureButton.classList.add('hidden');
+            }
         }
     </script>
 </div>
