@@ -3,10 +3,11 @@
 namespace App\Livewire;
 
 use Livewire\Component;
+use App\Jobs\RemoveImageBackground;
 
 class BackgroundRemover extends Component
 {
-    public $image = "";
+    public $image;
 
     public function updated($property)
     {
@@ -19,6 +20,8 @@ class BackgroundRemover extends Component
             $uploadPath = $this->image->storeAs('images', $uploadName, 'public');
 
             $imageId = base64url_encode($uploadPath);
+
+            RemoveImageBackground::dispatch($imageId);
         }
     }
 
