@@ -1,6 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Livewire\ImageView;
+use App\Livewire\BackgroundRemover;
 
-Route::get('/', ImageView::class);
+Route::get('/', BackgroundRemover::class);
