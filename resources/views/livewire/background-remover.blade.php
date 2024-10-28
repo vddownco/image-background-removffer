@@ -67,9 +67,11 @@
 
         <!-- -----Result section------- -->
         <div class="flex justify-center items-center p-1 h-96 w-full rounded bg-gray-100">
-            <div class="h-full w-full rounded bg-white border-solid border-2 border-gray-200 shadow-inner">
+            <div
+                class="flex items-center justify-center h-full w-full rounded bg-white border-solid border-2 border-gray-200 shadow-inner">
                 @if($maskedImageUrl)
-                    <img id="masked-image" src="{{ asset($maskedImageUrl) }}" alt="Uploaded image" class="h-full w-full" />
+                    <img id="masked-image" src="{{ asset($maskedImageUrl) }}" alt="Uploaded image"
+                        class="object-contain max-w-full max-h-full" />
                 @endif
                 @if($isProcessing)
                     <div class="flex items-center justify-center w-full h-full">
@@ -153,12 +155,12 @@
         //Capture image
         function take_snapshot() {
             Webcam.snap(function (data_uri) {
-                document.getElementById('webcamZone').innerHTML = '<img src="' + data_uri + '"/>';
+                document.getElementById('webcamZone').innerHTML = '<img src="' + data_uri + '" class="object-contain max-w-full max-h-full"/>';
                 turnOffCamera();
 
                 var raw_image_data = data_uri.replace(/^data\:image\/\w+\;base64\,/, '');
 
-                document.getElementById('dropzone-file').value = raw_image_data;
+                Livewire.dispatch("imageCaptured", { raw_data: raw_image_data });
             });
 
             if (activateCameraButton.classList.contains('hidden')) {

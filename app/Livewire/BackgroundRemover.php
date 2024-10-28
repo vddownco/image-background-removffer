@@ -32,6 +32,20 @@ class BackgroundRemover extends Component
         }
     }
 
+    #[On('imageCaptured')]
+    public function processWebcamRawImageData($raw_data)
+    {
+        $this->isProcessing = true;
+        $image_binary_data = base64_decode($raw_data);
+        $uploadName = uniqid('webcam_', true) . '.png';
+        $uploadPath = 'images/' . $uploadName;
+        Storage::disk('public')->put($uploadPath, $image_binary_data);
+
+        $imageId = base64url_encode($uploadPath);
+
+        RemoveImageBackground::dispatch($imageId);
+    }
+
     #[On('echo:bg-removed,ImageBackgroundRemoved')]
     public function updateMaskedImageUrl($payload)
     {
