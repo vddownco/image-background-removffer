@@ -13,11 +13,13 @@ class BackgroundRemover extends Component
     use WithFileUploads;
     public $image;
     public $maskedImageUrl;
+    public $isProcessing = false;
 
     public function updated($property)
     {
         if ($property === "image") {
             //TODO: validation
+            $this->isProcessing = true;
             $name = pathinfo($this->image->getClientOriginalName(), PATHINFO_FILENAME);
             $extension = $this->image->getClientOriginalExtension();
             $uploadName = $name . '_' . time() . '.' . $extension;
@@ -35,6 +37,7 @@ class BackgroundRemover extends Component
     {
         $path = base64url_decode($payload['masked_id']);
         $this->maskedImageUrl = Storage::url($path);
+        $this->isProcessing = false;
     }
 
     public function render()

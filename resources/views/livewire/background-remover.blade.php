@@ -70,7 +70,8 @@
             <div class="h-full w-full rounded bg-white border-solid border-2 border-gray-200 shadow-inner">
                 @if($maskedImageUrl)
                     <img id="masked-image" src="{{ asset($maskedImageUrl) }}" alt="Uploaded image" class="h-full w-full" />
-                @else
+                @endif
+                @if($isProcessing)
                     <div class="flex items-center justify-center w-full h-full">
                         <div
                             class="px-3 py-1 text-xs font-medium leading-none text-center text-blue-800 bg-blue-200 rounded-full animate-pulse dark:bg-blue-900 dark:text-blue-200">
@@ -92,8 +93,8 @@
         Webcam.set({
             //width: 320,
             //height: 240,
-            image_format: 'jpeg',
-            jpeg_quality: 90,
+            image_format: 'png',
+            jpeg_quality: 100,
             // dest_width: 640,
             // dest_height: 480,
             // force_flash: false,
@@ -157,8 +158,7 @@
 
                 var raw_image_data = data_uri.replace(/^data\:image\/\w+\;base64\,/, '');
 
-                //document.getElementById('captured_image').value = raw_image_data;
-                //document.getElementById('myform').submit();
+                document.getElementById('dropzone-file').value = raw_image_data;
             });
 
             if (activateCameraButton.classList.contains('hidden')) {
