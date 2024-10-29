@@ -32,7 +32,7 @@
                 </div>
                 <div
                     class="flex justify-center space-x-2 py-2 w-full bg-white border-solid border-t-2 border-gray-200 ">
-                    <button id="fileUploadButton" class="text-gray-500 hover:text-amber-600 px-4 py-2 rounded">
+                    <button id="fileUploadButton" class="text-amber-600 hover:text-amber-600 px-4 py-2 rounded">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="size-6">
                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -117,6 +117,18 @@
 
         // Function to activate the camera on button click
         activateCameraButton.addEventListener('click', function () {
+            if (fileUploadButton.classList.contains('text-amber-600')) {
+                fileUploadButton.classList.remove('text-amber-600');
+                fileUploadButton.classList.add('text-gray-500');
+            }
+
+            if (activateCameraButton.classList.contains('text-gray-500')) {
+                activateCameraButton.classList.remove('text-gray-500');
+                activateCameraButton.classList.add('text-amber-600');
+                captureButton.classList.remove('text-gray-500');
+                captureButton.classList.add('text-amber-600');
+            }
+
             if (!fileDropZone.classList.contains('hidden')) {
                 fileDropZone.classList.add('hidden');
             }
@@ -147,6 +159,19 @@
         // Function to show file drop zone
         fileUploadButton.addEventListener('click', function () {
             turnOffCamera();
+
+            if (activateCameraButton.classList.contains('text-amber-600')) {
+                activateCameraButton.classList.remove('text-amber-600');
+                activateCameraButton.classList.add('text-gray-500');
+
+                captureButton.classList.remove('text-amber-600');
+                captureButton.classList.add('text-gray-500');
+            }
+
+            if (fileUploadButton.classList.contains('text-gray-500')) {
+                fileUploadButton.classList.remove('text-gray-500');
+                fileUploadButton.classList.add('text-amber-600');
+            }
 
             if (!webcamZone.classList.contains('hidden')) {
                 webcamZone.classList.add('hidden');
