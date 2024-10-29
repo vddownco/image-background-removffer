@@ -32,6 +32,14 @@
                 </div>
                 <div
                     class="flex justify-center space-x-2 py-2 w-full bg-white border-solid border-t-2 border-gray-200 ">
+                    <button id="fileUploadButton" class="text-gray-500 hover:text-amber-600 px-4 py-2 rounded">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+                        </svg>
+
+                    </button>
                     <button id="activateCameraButton" class="text-gray-500 hover:text-amber-700 px-4 py-2 rounded">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="size-6">
@@ -53,14 +61,6 @@
                         </svg>
 
                     </button>
-                    <button id="fileUploadButton" class="text-gray-500 hover:text-amber-600 px-4 py-2 rounded">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="size-6">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
-                        </svg>
-
-                    </button>
                 </div>
             </div>
         </div>
@@ -69,8 +69,8 @@
         <div class="flex justify-center items-center p-1 h-96 w-full rounded bg-gray-100">
             <div
                 class="flex items-center justify-center h-full w-full rounded bg-white border-solid border-2 border-gray-200 shadow-inner">
-                @if($maskedImageUrl)
-                    <img id="masked-image" src="{{ asset($maskedImageUrl) }}" alt="Uploaded image"
+                @if(count($maskedImageUrl) > 0 && !$isProcessing)
+                    <img id="masked-image" src="{{ asset(array_pop($maskedImageUrl)) }}" alt="Uploaded image"
                         class="object-contain max-w-full max-h-full" />
                 @endif
                 @if($isProcessing)
@@ -82,6 +82,17 @@
                 @endif
             </div>
         </div>
+    </div>
+
+    <!-- ----------------------------Image gallery--------------------------- -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5">
+        @if(count($maskedImageUrl) > 0)
+            @foreach (array_reverse($maskedImageUrl) as $url)
+                <div class="flex items-center justify-center p-1 h-96 w-full" wire:key="image-{{ $loop->index }}">
+                    <img class="object-contain max-w-full max-h-full rounded-lg" src="{{asset($url)}}" alt="{{ $loop->index }}">
+                </div>
+            @endforeach
+        @endif
     </div>
 
     <script language="JavaScript">

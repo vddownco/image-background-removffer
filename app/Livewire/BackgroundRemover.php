@@ -12,7 +12,7 @@ class BackgroundRemover extends Component
 {
     use WithFileUploads;
     public $image;
-    public $maskedImageUrl;
+    public $maskedImageUrl = [];
     public $isProcessing = false;
 
     public function updated($property)
@@ -47,10 +47,11 @@ class BackgroundRemover extends Component
     }
 
     #[On('echo:bg-removed,ImageBackgroundRemoved')]
-    public function updateMaskedImageUrl($payload)
+    public function updatedMaskedImageUrl($payload)
     {
         $path = base64url_decode($payload['masked_id']);
-        $this->maskedImageUrl = Storage::url($path);
+        //$this->maskedImageUrl = Storage::url($path);
+        array_push($this->maskedImageUrl, Storage::url($path));
         $this->isProcessing = false;
     }
 
