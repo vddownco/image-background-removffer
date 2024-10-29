@@ -24,14 +24,22 @@
                                 <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span>
                                     or drag and
                                     drop</p>
-                                <p class="text-xs text-gray-500">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
+                                <p class="text-xs text-gray-500">PNG, JPG or GIF (MAX FILE SIZE. 1024KB)</p>
                             </div>
-                            <input id="dropzone-file" type="file" class="hidden" />
+                            <input id="dropzone-file" type="file" wire:model="image" class="hidden" />
                         </label>
                     </div>
                 </div>
                 <div
                     class="flex justify-center space-x-2 py-2 w-full bg-white border-solid border-t-2 border-gray-200 ">
+                    <button id="fileUploadButton" class="text-amber-600 hover:text-amber-600 px-4 py-2 rounded">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+                        </svg>
+
+                    </button>
                     <button id="activateCameraButton" class="text-gray-500 hover:text-amber-700 px-4 py-2 rounded">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="size-6">
@@ -43,7 +51,7 @@
 
                     </button>
                     <button onclick="take_snapshot()" id="captureButton"
-                        class="text-gray-500 hover:text-amber-700 px-4 py-2 rounded hidden">
+                        class="text-gray-500 hover:text-amber-600 px-4 py-2 rounded hidden">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="size-6">
                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -53,25 +61,46 @@
                         </svg>
 
                     </button>
-                    <button id="fileUploadButton" class="text-gray-500 hover:text-amber-700 px-4 py-2 rounded">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="size-6">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
-                        </svg>
-
-                    </button>
                 </div>
             </div>
         </div>
 
         <!-- -----Result section------- -->
         <div class="flex justify-center items-center p-1 h-96 w-full rounded bg-gray-100">
-            <div class="h-full w-full rounded bg-white border-solid border-2 border-gray-200 shadow-inner">
-
+            <div
+                class="flex items-center justify-center h-full w-full rounded bg-white border-solid border-2 border-gray-200 shadow-inner">
+                @if(count($maskedImageUrl) > 0 && !$isProcessing)
+                    <div id="image-compare" class="h-full z-10">
+                        <img id="masked-image" src="{{ asset(array_pop($maskedImageUrl)) }}" alt="Uploaded image"
+                            class="object-contain w-auto h-full" />
+                        <img id="original-image" src="{{ asset($imageUrl) }}" alt="Uploaded image"
+                            class="object-contain w-auto h-full">
+                        <div
+                            class="absolute inset-0 keep z-[-1] pattern-rectangles pattern-gray-600 pattern-size-4 pattern-opacity-20 pattern-bg-gray-200">
+                        </div>
+                    </div>
+                @endif
+                @if($isProcessing)
+                    <div class="flex items-center justify-center w-full h-full">
+                        <div
+                            class="px-3 py-1 text-xs font-medium leading-none text-center text-blue-800 bg-blue-200 rounded-full animate-pulse dark:bg-blue-900 dark:text-blue-200">
+                            processing...</div>
+                    </div>
+                @endif
+                @error('image') <span class="text-red-500">{{ $message }}</span> @enderror
             </div>
-
         </div>
+    </div>
+
+    <!-- ----------------------------Image gallery--------------------------- -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5">
+        @if(count($maskedImageUrl) > 0)
+            @foreach (array_reverse($maskedImageUrl) as $url)
+                <div class="flex items-center justify-center p-1 h-96 w-full" wire:key="image-{{ $loop->index }}">
+                    <img class="object-contain max-w-full max-h-full rounded-lg" src="{{asset($url)}}" alt="{{ $loop->index }}">
+                </div>
+            @endforeach
+        @endif
     </div>
 
     <script language="JavaScript">
@@ -85,8 +114,8 @@
         Webcam.set({
             //width: 320,
             //height: 240,
-            image_format: 'jpeg',
-            jpeg_quality: 90,
+            image_format: 'png',
+            jpeg_quality: 100,
             // dest_width: 640,
             // dest_height: 480,
             // force_flash: false,
@@ -96,6 +125,18 @@
 
         // Function to activate the camera on button click
         activateCameraButton.addEventListener('click', function () {
+            if (fileUploadButton.classList.contains('text-amber-600')) {
+                fileUploadButton.classList.remove('text-amber-600');
+                fileUploadButton.classList.add('text-gray-500');
+            }
+
+            if (activateCameraButton.classList.contains('text-gray-500')) {
+                activateCameraButton.classList.remove('text-gray-500');
+                activateCameraButton.classList.add('text-amber-600');
+                captureButton.classList.remove('text-gray-500');
+                captureButton.classList.add('text-amber-600');
+            }
+
             if (!fileDropZone.classList.contains('hidden')) {
                 fileDropZone.classList.add('hidden');
             }
@@ -127,6 +168,19 @@
         fileUploadButton.addEventListener('click', function () {
             turnOffCamera();
 
+            if (activateCameraButton.classList.contains('text-amber-600')) {
+                activateCameraButton.classList.remove('text-amber-600');
+                activateCameraButton.classList.add('text-gray-500');
+
+                captureButton.classList.remove('text-amber-600');
+                captureButton.classList.add('text-gray-500');
+            }
+
+            if (fileUploadButton.classList.contains('text-gray-500')) {
+                fileUploadButton.classList.remove('text-gray-500');
+                fileUploadButton.classList.add('text-amber-600');
+            }
+
             if (!webcamZone.classList.contains('hidden')) {
                 webcamZone.classList.add('hidden');
             }
@@ -145,13 +199,12 @@
         //Capture image
         function take_snapshot() {
             Webcam.snap(function (data_uri) {
-                document.getElementById('webcamZone').innerHTML = '<img src="' + data_uri + '"/>';
+                document.getElementById('webcamZone').innerHTML = '<img src="' + data_uri + '" class="object-contain max-w-full max-h-full"/>';
                 turnOffCamera();
 
                 var raw_image_data = data_uri.replace(/^data\:image\/\w+\;base64\,/, '');
 
-                //document.getElementById('captured_image').value = raw_image_data;
-                //document.getElementById('myform').submit();
+                Livewire.dispatch("imageCaptured", { raw_data: raw_image_data });
             });
 
             if (activateCameraButton.classList.contains('hidden')) {
@@ -163,4 +216,32 @@
             }
         }
     </script>
+
+    @script
+    <script>
+        Livewire.hook('morph.added', ({ el }) => {
+            if (el.id !== 'image-compare') return;
+
+            initImageCompare();
+        })
+
+        function initImageCompare() {
+            const image_compare = document.getElementById('image-compare');
+
+            if (!image_compare) return;
+
+            const options = {
+                showLabels: true,
+                labelOptions: {
+                    before: 'Masked',
+                    after: 'Original',
+                    onHover: true
+                },
+            }
+            new ImageCompare(image_compare, options).mount();
+        }
+
+        initImageCompare();
+    </script>
+    @endscript
 </div>

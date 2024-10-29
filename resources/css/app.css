@@ -1,3 +1,4 @@
+@import "../../node_modules/image-compare-viewer/dist/image-compare-viewer.min.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
