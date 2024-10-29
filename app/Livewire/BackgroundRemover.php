@@ -7,10 +7,12 @@ use App\Jobs\RemoveImageBackground;
 use Livewire\WithFileUploads;
 use Livewire\Attributes\On;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Attributes\Validate;
 
 class BackgroundRemover extends Component
 {
     use WithFileUploads;
+    #[Validate(['image' => 'required|image|mimes:jpeg,png,jpg,gif|max:1024'], message: 'Please provide a valid image file')]
     public $image;
     public $maskedImageUrl = [];
     public $isProcessing = false;
@@ -18,7 +20,7 @@ class BackgroundRemover extends Component
     public function updated($property)
     {
         if ($property === "image") {
-            //TODO: validation
+            $this->validate();
             $this->isProcessing = true;
             $name = pathinfo($this->image->getClientOriginalName(), PATHINFO_FILENAME);
             $extension = $this->image->getClientOriginalExtension();

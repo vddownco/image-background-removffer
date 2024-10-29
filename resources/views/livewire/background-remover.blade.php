@@ -24,7 +24,7 @@
                                 <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span>
                                     or drag and
                                     drop</p>
-                                <p class="text-xs text-gray-500">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
+                                <p class="text-xs text-gray-500">PNG, JPG or GIF (MAX FILE SIZE. 1024KB)</p>
                             </div>
                             <input id="dropzone-file" type="file" wire:model="image" class="hidden" />
                         </label>
@@ -80,6 +80,7 @@
                             processing...</div>
                     </div>
                 @endif
+                @error('image') <span class="text-red-500">{{ $message }}</span> @enderror
             </div>
         </div>
     </div>
