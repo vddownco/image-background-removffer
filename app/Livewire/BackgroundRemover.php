@@ -8,6 +8,7 @@ use Livewire\WithFileUploads;
 use Livewire\Attributes\On;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Validate;
+use Illuminate\Support\Facades\Cache;
 
 class BackgroundRemover extends Component
 {
@@ -17,6 +18,23 @@ class BackgroundRemover extends Component
     public $imageUrl;
     public $maskedImageUrl = [];
     public $isProcessing = false;
+
+    public function storeInCache()
+    {
+        Cache::put('masked_image_url', $this->maskedImageUrl, now()->addMinutes(10));
+        Cache::put('image_url', $this->imageUrl, now()->addMinutes(10));
+    }
+
+    public function retrieveFromCache()
+    {
+        $this->maskedImageUrl = Cache::get('masked_image_url', []);
+        $this->imageUrl = Cache::get('image_url');
+    }
+
+    public function mount()
+    {
+        $this->retrieveFromCache();
+    }
 
     public function updated($property)
     {
@@ -30,6 +48,7 @@ class BackgroundRemover extends Component
             $uploadPath = $this->image->storeAs('images', $uploadName, 'public');
 
             $this->imageUrl = Storage::url($uploadPath);
+            $this->storeInCache();
             $imageId = base64url_encode($uploadPath);
 
             RemoveImageBackground::dispatch($imageId);
@@ -46,6 +65,7 @@ class BackgroundRemover extends Component
         Storage::disk('public')->put($uploadPath, $image_binary_data);
 
         $this->imageUrl = Storage::url($uploadPath);
+        $this->storeInCache();
         $imageId = base64url_encode($uploadPath);
 
         RemoveImageBackground::dispatch($imageId);
@@ -57,6 +77,7 @@ class BackgroundRemover extends Component
         $path = base64url_decode($payload['masked_id']);
         //$this->maskedImageUrl = Storage::url($path);
         array_push($this->maskedImageUrl, Storage::url($path));
+        $this->storeInCache();
         $this->isProcessing = false;
     }
 
