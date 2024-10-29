@@ -35,7 +35,7 @@ These instructions will help you set up and run the application on your local ma
     cp .env.example .env
     ```
 
-    This application doesn't need any databse connection, I am using php cache to store image file path to if you wish make any database queries later open the .env file and set your application and database configurations.
+    This application doesn't need any databse connection, I am using php cache to store image file path. If you wish to make any database queries later open the .env file and set your application and database configurations.
 
 5.  Generate Application Key
     ```bash
