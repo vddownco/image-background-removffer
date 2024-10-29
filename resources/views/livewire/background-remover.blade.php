@@ -69,7 +69,7 @@
         <div class="flex justify-center items-center p-1 h-96 w-full rounded bg-gray-100">
             <div
                 class="flex items-center justify-center h-full w-full rounded bg-white border-solid border-2 border-gray-200 shadow-inner">
-                @if(count($maskedImageUrl) > 0 && !$isProcessing)
+                @if(count($maskedImageUrl) > 0 && !$isProcessing && !$errors->has('image'))
                     <div id="image-compare" class="h-full z-10">
                         <img id="masked-image" src="{{ asset(array_pop($maskedImageUrl)) }}" alt="Uploaded image"
                             class="object-contain w-auto h-full" />
