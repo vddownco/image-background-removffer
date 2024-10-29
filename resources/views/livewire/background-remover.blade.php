@@ -70,8 +70,15 @@
             <div
                 class="flex items-center justify-center h-full w-full rounded bg-white border-solid border-2 border-gray-200 shadow-inner">
                 @if(count($maskedImageUrl) > 0 && !$isProcessing)
-                    <img id="masked-image" src="{{ asset(array_pop($maskedImageUrl)) }}" alt="Uploaded image"
-                        class="object-contain max-w-full max-h-full" />
+                    <div id="image-compare" class="h-full z-10">
+                        <img id="masked-image" src="{{ asset(array_pop($maskedImageUrl)) }}" alt="Uploaded image"
+                            class="object-contain w-auto h-full" />
+                        <img id="original-image" src="{{ asset($imageUrl) }}" alt="Uploaded image"
+                            class="object-contain w-auto h-full">
+                        <div
+                            class="absolute inset-0 keep z-[-1] pattern-rectangles pattern-gray-600 pattern-size-4 pattern-opacity-20 pattern-bg-gray-200">
+                        </div>
+                    </div>
                 @endif
                 @if($isProcessing)
                     <div class="flex items-center justify-center w-full h-full">
@@ -209,4 +216,32 @@
             }
         }
     </script>
+
+    @script
+    <script>
+        Livewire.hook('morph.added', ({ el }) => {
+            if (el.id !== 'image-compare') return;
+
+            initImageCompare();
+        })
+
+        function initImageCompare() {
+            const image_compare = document.getElementById('image-compare');
+
+            if (!image_compare) return;
+
+            const options = {
+                showLabels: true,
+                labelOptions: {
+                    before: 'Masked',
+                    after: 'Original',
+                    onHover: true
+                },
+            }
+            new ImageCompare(image_compare, options).mount();
+        }
+
+        initImageCompare();
+    </script>
+    @endscript
 </div>

@@ -14,6 +14,7 @@ class BackgroundRemover extends Component
     use WithFileUploads;
     #[Validate(['image' => 'required|image|mimes:jpeg,png,jpg,gif|max:1024'], message: 'Please provide a valid image file')]
     public $image;
+    public $imageUrl;
     public $maskedImageUrl = [];
     public $isProcessing = false;
 
@@ -28,6 +29,7 @@ class BackgroundRemover extends Component
 
             $uploadPath = $this->image->storeAs('images', $uploadName, 'public');
 
+            $this->imageUrl = Storage::url($uploadPath);
             $imageId = base64url_encode($uploadPath);
 
             RemoveImageBackground::dispatch($imageId);
@@ -43,6 +45,7 @@ class BackgroundRemover extends Component
         $uploadPath = 'images/' . $uploadName;
         Storage::disk('public')->put($uploadPath, $image_binary_data);
 
+        $this->imageUrl = Storage::url($uploadPath);
         $imageId = base64url_encode($uploadPath);
 
         RemoveImageBackground::dispatch($imageId);
