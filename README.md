@@ -48,30 +48,40 @@ These instructions will help you set up and run the application on your local ma
     ```
 
 5.  Generate Application Key
+
     ```bash
     php artisan key:generate
     ```
-6.  Download briaai/RMBG-1.4 Model Into Cache Directory, By Default "your-project-root/.transformers-cache"
+
+6.  Run Database Migrations
+
+    ```bash
+    php artisan migrate
+    ```
+
+7.  Download briaai/RMBG-1.4 Model Into Cache Directory, By Default "your-project-root/.transformers-cache"
     ```bash
     ./vendor/bin/transformers download briaai/RMBG-1.4
     ```
-7.  Link the Storage
+8.  Link the Storage
     ```bash
     php artisan storage:link
     ```
-8.  Start the Queue
+9.  Start the Queue
     ```bash
     php artisan queue:work
     ```
-9.  Start Reverb
+10. Start Reverb
+
     ```bash
     php artisan reverb:start
     ```
-10. Run the Application
+
+11. Run the Application
     ```bash
     composer run dev
     ```
-11. Access the Application
+12. Access the Application
     Visit http://localhost:8000 to access the app.
 
 ## Usage
