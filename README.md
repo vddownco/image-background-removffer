@@ -35,7 +35,17 @@ These instructions will help you set up and run the application on your local ma
     cp .env.example .env
     ```
 
-    This application doesn't need any databse connection, I am using php cache to store image file path. If you wish to make any database queries later open the .env file and set your application and database configurations.
+    This application does not use any database queries but for storing laravel queue migrations you need to setup a database connection. For simplicity I'm using SQLite, open the .env file and add the following in your .env:
+
+    ```bash
+    DB_CONNECTION=sqlite
+    ```
+
+    Make sure to create the SQLite database file:
+
+    ```base
+    touch database/database.sqlite
+    ```
 
 5.  Generate Application Key
     ```bash
@@ -45,7 +55,7 @@ These instructions will help you set up and run the application on your local ma
     ```bash
     ./vendor/bin/transformers download briaai/RMBG-1.4
     ```
-7.  Link The Storage
+7.  Link the Storage
     ```bash
     php artisan storage:link
     ```
@@ -57,7 +67,7 @@ These instructions will help you set up and run the application on your local ma
     ```bash
     php artisan reverb:start
     ```
-10. Run The Application
+10. Run the Application
     ```bash
     composer run dev
     ```
