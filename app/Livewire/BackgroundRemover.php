@@ -18,21 +18,23 @@ class BackgroundRemover extends Component
     public $imageUrl;
     public $maskedImageUrl = [];
     public $isProcessing = false;
+    public $sessionId;
 
     public function storeInCache()
     {
-        Cache::put('masked_image_url', $this->maskedImageUrl, now()->addMinutes(10));
-        Cache::put('image_url', $this->imageUrl, now()->addMinutes(10));
+        Cache::put('masked_image_url' . $this->sessionId, $this->maskedImageUrl, now()->addMinutes(10));
+        Cache::put('image_url' . $this->sessionId, $this->imageUrl, now()->addMinutes(10));
     }
 
     public function retrieveFromCache()
     {
-        $this->maskedImageUrl = Cache::get('masked_image_url', []);
-        $this->imageUrl = Cache::get('image_url');
+        $this->maskedImageUrl = Cache::get('masked_image_url' . $this->sessionId, []);
+        $this->imageUrl = Cache::get('image_url' . $this->sessionId);
     }
 
     public function mount()
     {
+        $this->sessionId = session()->getId();
         $this->retrieveFromCache();
     }
 
