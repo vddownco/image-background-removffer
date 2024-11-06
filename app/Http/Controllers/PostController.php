@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Post;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
@@ -17,9 +18,24 @@ class PostController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        //Validate the data
+        $validated = $request->validate([
+            'url' => 'required'
+        ]);
+
+        //Store the url to the DB
+        $post = new Post;
+        $post->url = $validated['url'];
+        $post->save();
+
+        $postId = $post->id;
+
+        //TODO: Start the post generating process using job
+
+        //Redirect to the result page
+        return redirect()->route('post.show', ['post' => $postId]);
     }
 
     /**
@@ -35,7 +51,7 @@ class PostController extends Controller
      */
     public function show(string $id)
     {
-        //
+        return view('dashboard');
     }
 
     /**
