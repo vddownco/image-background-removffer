@@ -43,7 +43,9 @@ class ScrapeProductDetails implements ShouldQueue
             $productData = $this->processResponse($response);
 
             // Step 6: Store the data in the database
-            $this->storeProductData($productData);
+            $productDetailsId = $this->storeProductData($productData);
+
+            // Step 7: Dispatch an event with the Id
 
         } catch (\Exception $e) {
             Log::error('Error scraping product details: ' . $e->getMessage());
@@ -206,10 +208,10 @@ class ScrapeProductDetails implements ShouldQueue
      *
      * @param array $productData
      */
-    protected function storeProductData(array $productData)
+    protected function storeProductData(array $productData): string
     {
         // Example: Storing data in the Product model
-        WebsiteDetails::create([
+        $details = WebsiteDetails::create([
             'name' => $productData['name'],
             'subTitle' => $productData['subTitle'],
             'price' => $productData['price'],
@@ -219,5 +221,7 @@ class ScrapeProductDetails implements ShouldQueue
             'logoUrl' => $productData['logoUrl'],
             'companyName' => $productData['companyName'],
         ]);
+
+        return $details->id;
     }
 }
