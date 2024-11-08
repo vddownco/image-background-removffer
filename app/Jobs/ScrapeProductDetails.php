@@ -59,30 +59,32 @@ class ScrapeProductDetails implements ShouldQueue
     protected function generateGptVisionPrompt(string $base64Data): array
     {
         return [
-            "role" => "user",
-            "content" => [
-                [
-                    "type" => "text",
-                    "text" => "You are an expert in visual data extraction. You will be given an image of an e-commerce product page. Your task is to analyze this image and extract specific product information in a structured JSON format. Please locate the website's logo within the image, capture it, and provide it as a base64-encoded string in the specified field. Use the following JSON schema to structure your response:
+            [
+                "role" => "user",
+                "content" => [
+                    [
+                        "type" => "text",
+                        "text" => "You are an expert in visual data extraction. You will be given an image of an e-commerce product page. Your task is to analyze this image and extract specific product information in a structured JSON format. Please locate the website's logo within the image, capture it, and provide it as a base64-encoded string in the specified field. Use the following JSON schema to structure your response:
 
                         {
                             \'productName\': \'string\',
                             \'productSubTitle\': \'string\',
                             \'productPrice\': \'string\',
                             \'productDescription\': \'string\',
-                            \'websiteLogoImageURL\': \'base64 string\',
+                            \'websiteLogoImageBase64Data\': \'base64 string\',
                             \'companyName\': \'string\'
                         }
 
                         Ensure the extracted data matches the required types, and provide only the specified properties.",
-                ],
-                [
-                    "type" => "image_url",
-                    "image_url" => [
-                        "url" => "data:image/jpeg;base64,{$base64Data}"
+                    ],
+                    [
+                        "type" => "image_url",
+                        "image_url" => [
+                            "url" => "data:image/jpeg;base64," . $base64Data
+                        ],
                     ],
                 ],
-            ],
+            ]
         ];
     }
 
@@ -129,7 +131,7 @@ class ScrapeProductDetails implements ShouldQueue
                                 "productSubTitle" => ["type" => "string"],
                                 "productPrice" => ["type" => "string"],
                                 "productDescription" => ["type" => "string"],
-                                "websiteLogoImageURL" => ["type" => "string"],
+                                "websiteLogoImageBase64Data" => ["type" => "string"],
                                 "companyName" => ["type" => "string"],
                             ],
                             "required" => ["productName", "productSubTitle", "productPrice", "productDescription", "websiteLogoImageURL", "companyName"],
@@ -158,13 +160,13 @@ class ScrapeProductDetails implements ShouldQueue
         $websiteDomain = $parsedUrl['host'] ?? 'N/A';
 
         $record = WebsiteDetails::create([
-            'name' => $productData['name'],
-            'subTitle' => $productData['subTitle'],
-            'price' => $productData['price'],
-            'description' => $productData['description'],
+            'name' => $productData['productName'],
+            'subTitle' => $productData['productSubTitle'],
+            'price' => $productData['productPrice'],
+            'description' => $productData['productDescription'],
             'domain' => $websiteDomain,
             'url' => $url,
-            'logoUrl' => $productData['logoUrl'],
+            'logoUrl' => $productData['websiteLogoImageBase64Data'],
             'companyName' => $productData['companyName'],
         ]);
 
