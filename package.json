@@ -21,7 +21,6 @@
     },
     "dependencies": {
         "image-compare-viewer": "^1.6.2",
-        "puppeteer": "^23.7.1",
         "tailwindcss-bg-patterns": "^0.3.0"
     }
 }
