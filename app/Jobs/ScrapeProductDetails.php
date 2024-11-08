@@ -27,14 +27,16 @@ class ScrapeProductDetails implements ShouldQueue
     public function handle(): void
     {
         try {
-            //  Step 1: Get the body of the html
-            $htmlBody = Browsershot::url($this->url)->waitUntilNetworkIdle()->bodyHtml();
+            //  Step 1: Get the body of the html or base64 screenshot
+            //$htmlBody = Browsershot::url($this->url)->waitUntilNetworkIdle()->bodyHtml();
+            $base64Data = Browsershot::url($this->url)->waitUntilNetworkIdle()->base64Screenshot();
 
             //  Step 2: Create the prompt for GPT
-            $gptPrompt = $this->generateGptPrompt($htmlBody);
+            //$gptTextPrompt = $this->generateGptPrompt($htmlBody);
+            $gptVisionPrompt = $this->generateGptVisionPrompt($base64Data);
 
             //  Step 3: Get the product details from GPT
-            $response = $this->getGPTResponse($gptPrompt);
+            $response = $this->getGPTResponse($gptVisionPrompt);
 
             // Step 4: Store the details in the database
             $productDataId = $this->storeProductData($response, $this->url);
@@ -46,6 +48,42 @@ class ScrapeProductDetails implements ShouldQueue
         } catch (\Exception $e) {
             Log::error('Error scraping product details: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Create a prompt for GPT-4o-vision model.
+     *
+     * @param string $base64Data
+     * @return array
+     */
+    protected function generateGptVisionPrompt(string $base64Data): array
+    {
+        return [
+            "role" => "user",
+            "content" => [
+                [
+                    "type" => "text",
+                    "text" => "You are an expert in visual data extraction. You will be given an image of an e-commerce product page. Your task is to analyze this image and extract specific product information in a structured JSON format. Please locate the website's logo within the image, capture it, and provide it as a base64-encoded string in the specified field. Use the following JSON schema to structure your response:
+
+                        {
+                            \'productName\': \'string\',
+                            \'productSubTitle\': \'string\',
+                            \'productPrice\': \'string\',
+                            \'productDescription\': \'string\',
+                            \'websiteLogoImageURL\': \'base64 string\',
+                            \'companyName\': \'string\'
+                        }
+
+                        Ensure the extracted data matches the required types, and provide only the specified properties.",
+                ],
+                [
+                    "type" => "image_url",
+                    "image_url" => [
+                        "url" => "data:image/jpeg;base64,{$base64Data}"
+                    ],
+                ],
+            ],
+        ];
     }
 
     /**
