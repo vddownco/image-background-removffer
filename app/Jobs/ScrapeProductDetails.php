@@ -157,7 +157,7 @@ class ScrapeProductDetails implements ShouldQueue
                 "content" => "
                     Extract the following information from the provided HTML content and organize it into the specified schema. Only include the relevant data if available in the HTML.
                     Information to extract:
-                        -Product Name: The main name or title of the product.
+                        -Product Name: The main name or title of the product. If the product name exceeds two words, generate a suitable name that retains the core essence of the existing name.
                         -Product Subtitle: Any additional descriptive title or tagline related to the product. If a subtitle exists, rework it into a more catchy and meaningful version, no longer than five words. If no subtitle is present, generate a new catchy, meaningful subtitle based on the product description.
                         -Product Price: The price of the product, including any currency symbols or units.
                         -Product Description: A detailed description or summary of the product, typically found in a paragraph or list format.
@@ -179,6 +179,7 @@ class ScrapeProductDetails implements ShouldQueue
                         - If any field is not present in the HTML, set it to 'N/A' in the output schema.
                         - If the product subtitle is 'N/A', generate a meaningful and catchy subtitle based on the description (no more than five words). Focus on capturing the product's essence or a key selling point.
                         - If the product already has a subtitle, transform it into a more catchy, impactful version. Make it shorter, no more than five words, and ensure it reflects the core features or value of the product.
+                        - If the product name exceeds two words, generate a suitable name that retains the core essence of the existing name.
                 "
             ],
             [
