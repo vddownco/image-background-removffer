@@ -238,6 +238,7 @@ class ScrapeProductDetails implements ShouldQueue
         // Extract Website Domain
         $parsedUrl = parse_url($url);
         $websiteDomain = $parsedUrl['host'] ?? 'N/A';
+        $logoImageUrl = (strpos($productData['website_logo_url'], 'recoverygear.com.au') !== false) ? 'https:' . $productData['product_image_url'] : $productData['product_image_url'];
 
         $record = WebsiteDetails::create([
             'name' => $productData['product_name'],
@@ -247,7 +248,7 @@ class ScrapeProductDetails implements ShouldQueue
             'domain' => $websiteDomain,
             'url' => $url,
             'productImageUrl' => $productData['product_image_url'],
-            'logoUrl' => $productData['website_logo_url'],
+            'logoUrl' => $logoImageUrl,
             'companyName' => $productData['company_name'],
         ]);
 
