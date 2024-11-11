@@ -21,6 +21,7 @@ return new class extends Migration {
             $table->string('productImageUrl');
             $table->string('logoUrl');
             $table->string('companyName');
+            $table->string('companyPhoneNumber');
             $table->timestamps();
         });
     }

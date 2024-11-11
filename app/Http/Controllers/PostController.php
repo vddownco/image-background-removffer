@@ -31,13 +31,11 @@ class PostController extends Controller
         $post->url = $validated['url'];
         $post->save();
 
-        $postId = $post->id;
-
-        //TODO: Start the post generating process using job
-        ScrapeProductDetails::dispatch($validated['url']);
+        //Start the post generating process using job
+        ScrapeProductDetails::dispatch($validated['url'], $post->id);
 
         //Redirect to the result page
-        return redirect()->route('post.show', ['post' => $postId]);
+        return redirect()->route('post.show', ['post' => $post->id]);
     }
 
     /**

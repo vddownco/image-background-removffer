@@ -17,7 +17,7 @@ class ScrapeProductDetails implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(public string $url)
+    public function __construct(public string $url, public string $postId)
     {
         // 
     }
@@ -43,7 +43,15 @@ class ScrapeProductDetails implements ShouldQueue
             $response = $this->getGPTResponse($gptTextPrompt);
 
             //  Step 5: Store the details in the database
-            $productDataId = $this->storeProductData($response, $this->url);
+            $productData = $this->storeProductData($response, $this->url);
+
+            //  Step 6: Remove image backgrounds using Replicate
+
+            //  Step 7: Generate HTML for the post
+            //$htmlPost = $this->generateHtmlForPost($productData,);
+
+            //  Step 8: Take the screenshot
+            //Browsershot::html($htmlPost)->save(public_path($this->postId . '.png'));
 
             //  Step 6: Dispatch an event with ID
 
@@ -164,6 +172,7 @@ class ScrapeProductDetails implements ShouldQueue
                         -Product Image URL: The URL of the first image associated with the product, if available.
                         -Website Logo URL: The URL of the website's main logo image, often found in the header area.
                         -Company Name: The name of the company that owns or sells the product, generally found near the logo or in the footer.
+                        -Company Phone Number: The contact phone number for the company, if available, generally found in the footer or contact section of the website.
                     Schema for Output:
                         {
                             product_name: Extracted product name or 'N/A',
@@ -173,6 +182,7 @@ class ScrapeProductDetails implements ShouldQueue
                             product_image_url: Extracted URL for first product image or 'N/A'
                             website_logo_url: Extracted URL for website logo or 'N/A',
                             company_name: Extracted company name or 'N/A',
+                            company_phone_number: Extracted company phone number or 'N/A',
                         }
                     Notes for extraction:
                         - Ensure all values are extracted as plain text except for website_logo_url and product_image_url, which should contain a full URL if available.
@@ -180,6 +190,7 @@ class ScrapeProductDetails implements ShouldQueue
                         - If the product subtitle is 'N/A', generate a meaningful and catchy subtitle based on the description (no more than five words). Focus on capturing the product's essence or a key selling point.
                         - If the product already has a subtitle, transform it into a more catchy, impactful version. Make it shorter, no more than five words, and ensure it reflects the core features or value of the product.
                         - If the product name exceeds two words, generate a suitable name that retains the core essence of the existing name.
+                        - Extract the company phone number, if available, from the footer or contact section, and include it in the output.
                 "
             ],
             [
@@ -215,8 +226,9 @@ class ScrapeProductDetails implements ShouldQueue
                                 "product_image_url" => ["type" => "string"],
                                 "website_logo_url" => ["type" => "string"],
                                 "company_name" => ["type" => "string"],
+                                "company_phone_number" => ["type" => "string"],
                             ],
-                            "required" => ["product_name", "product_subtitle", "product_price", "product_description", "product_image_url", "website_logo_url", "company_name"],
+                            "required" => ["product_name", "product_subtitle", "product_price", "product_description", "product_image_url", "website_logo_url", "company_name", "company_phone_number"],
                             "additionalProperties" => false
                         ],
                         "strict" => true
@@ -230,7 +242,7 @@ class ScrapeProductDetails implements ShouldQueue
     }
 
     /**
-     * Optionally store the product data in a database.
+     * Store the product data in a database.
      *
      * @param array $productData
      * @return string
@@ -253,11 +265,69 @@ class ScrapeProductDetails implements ShouldQueue
             'productImageUrl' => $productImageUrl,
             'logoUrl' => $logoImageUrl,
             'companyName' => $productData['company_name'],
+            'companyPhoneNumber' => $productData['company_phone_number'],
         ]);
 
         dump($record);
 
         return $record->id;
+    }
+
+    /**
+     * Create html layout for generating post
+     * @param WebsiteDetails $productData
+     * @param string $backgroundImageUrl
+     * @param string $companyLogoUrl
+     * @param string $productImageUrl
+     * @return string
+     */
+
+    protected function generateHtmlForPost(WebsiteDetails $productData, string $backgroundImageUrl, string $companyLogoUrl, string $productImageUrl): string
+    {
+        return '
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+            <style>
+                :root {
+                    --main-bg-color: red;
+                    --main-text-color: white;
+                    --footer-bg-color: white;
+                    --footer-text-color: black;
+                    --main-font: "Roboto", Arial, sans-serif;
+                }
+            </style>
+        </head>
+        <body style="margin: 0; font-family: var(--main-font); height: 100vh; display: flex; flex-direction: column;">
+
+            <div class="main" style="flex: 1; background-color: var(--main-bg-color); padding: 5%; color: var(--main-text-color); display: flex; flex-direction: column; justify-content: center;">
+                <div class="product" style="padding: 10%; text-align: center;">
+                    <img src="' . $productImageUrl . '" alt="Product Image" style="max-width: 100%;">
+                </div>
+                <div class="title" style="text-align: center;">
+                    <h1 style="font-size: 5vw; margin: 0;">' . $productData->name . '</h1>
+                    <h2 style="font-size: 3vw; margin: 0;">' . $productData->subTitle . '</h2>
+                </div>
+            </div>
+
+            <div class="footer" style="background-color: var(--footer-bg-color); display: flex; justify-content: space-between; padding: 2%;">
+                <div class="column" style="flex: 1; text-align: center;">
+                    <p style="font-size: 2vw; color: var(--footer-text-color);">' . $productData->companyPhoneNumber . '</p>
+                </div>
+                <div class="column" style="flex: 1; text-align: center;">
+                    <img src="' . $companyLogoUrl . '" alt="Company Logo" style="max-width: 100%; height: auto;">
+                </div>
+                <div class="column" style="flex: 1; text-align: center;">
+                    <p style="font-size: 2vw; color: var(--footer-text-color);">' . $productData->domain . '</p>
+                </div>
+            </div>
+
+        </body>
+        </html>
+        ';
     }
 
     // =================================Some AI generated codes for reference=====================================
