@@ -8,6 +8,7 @@ use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Log;
 use Spatie\Browsershot\Browsershot;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\DomCrawler\Crawler;
 
 class ScrapeProductDetails implements ShouldQueue
@@ -48,12 +49,15 @@ class ScrapeProductDetails implements ShouldQueue
             //  Step 6: Remove image backgrounds using Replicate
 
             //  Step 7: Generate HTML for the post
-            //$htmlPost = $this->generateHtmlForPost($productData,);
+            //$htmlLayout = $this->generateHtmlForPost($productData,);
 
             //  Step 8: Take the screenshot
-            //Browsershot::html($htmlPost)->save(public_path($this->postId . '.png'));
+            // $postImageContent = Browsershot::html($htmlLayout)->screenshot();
+            // $path = 'screenshots/' . $this->postId . '.png';
+            // Storage::disk('public')->put($path, $postImageContent);
+            // $postImageUrl = Storage::url($path);
 
-            //  Step 6: Dispatch an event with ID
+            //  Step 9: Dispatch an event with ID
 
 
 
@@ -329,46 +333,4 @@ class ScrapeProductDetails implements ShouldQueue
         </html>
         ';
     }
-
-    // =================================Some AI generated codes for reference=====================================
-
-    //     if ($logoUrl !== 'N/A' && !preg_match('/^http(s)?:\/\//', $logoUrl)) {
-    //         $logoUrl = $parsedUrl['scheme'] . '://' . $parsedUrl['host'] . '/' . ltrim($logoUrl, '/');
-    //     } else {
-    //         $logoUrl = $parsedUrl['scheme'] . '://' . $parsedUrl['host'] . '/favicon.ico';
-    //     }
-
-    /**
-     * Process GPT's response and extract relevant product data.
-     *
-     * @param string $response
-     * @return array
-     */
-    // protected function processResponse(string $response): array
-    // {
-    //     $lines = explode("\n", $response);
-    //     $data = [];
-
-    //     foreach ($lines as $line) {
-    //         if (strpos($line, 'Product Name:') !== false) {
-    //             $data['name'] = trim(str_replace('Product Name:', '', $line));
-    //         } elseif (strpos($line, 'Product Subtitle:') !== false) {
-    //             $data['subTitle'] = trim(str_replace('Product Subtitle:', '', $line));
-    //         } elseif (strpos($line, 'Price:') !== false) {
-    //             $data['price'] = trim(str_replace('Price:', '', $line));
-    //         } elseif (strpos($line, 'Description:') !== false) {
-    //             $data['description'] = trim(str_replace('Description:', '', $line));
-    //         } elseif (strpos($line, 'Website Domain:') !== false) {
-    //             $data['domain'] = trim(str_replace('Website Domain:', '', $line));
-    //         } elseif (strpos($line, 'Page URL:') !== false) {
-    //             $data['url'] = trim(str_replace('Page URL:', '', $line));
-    //         } elseif (strpos($line, 'Website Logo URL:') !== false) {
-    //             $data['logoUrl'] = trim(str_replace('Website Logo URL:', '', $line));
-    //         } elseif (strpos($line, 'Company Name:') !== false) {
-    //             $data['companyName'] = trim(str_replace('Company Name:', '', $line));
-    //         }
-    //     }
-
-    //     return $data;
-    // }
 }
