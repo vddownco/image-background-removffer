@@ -158,11 +158,11 @@ class ScrapeProductDetails implements ShouldQueue
                     Extract the following information from the provided HTML content and organize it into the specified schema. Only include the relevant data if available in the HTML.
                     Information to extract:
                         -Product Name: The main name or title of the product.
-                        -Product Subtitle: Any additional descriptive title or tagline related to the product.
+                        -Product Subtitle: Any additional descriptive title or tagline related to the product. If a subtitle exists, rework it into a more catchy and meaningful version, no longer than five words. If no subtitle is present, generate a new catchy, meaningful subtitle based on the product description.
                         -Product Price: The price of the product, including any currency symbols or units.
                         -Product Description: A detailed description or summary of the product, typically found in a paragraph or list format.
                         -Product Image URL: The URL of the first image associated with the product, if available.
-                        -Website Logo URL: The URL of the website's logo image, often found in the header or main branding area.
+                        -Website Logo URL: The URL of the website's main logo image, often found in the header area.
                         -Company Name: The name of the company that owns or sells the product, generally found near the logo or in the footer.
                     Schema for Output:
                         {
@@ -175,8 +175,10 @@ class ScrapeProductDetails implements ShouldQueue
                             company_name: Extracted company name or 'N/A',
                         }
                     Notes for extraction:
-                        Ensure all values are extracted as plain text except for website_logo_url and product_image_url, which should contain a full URL if available.
-                        If any field is not present in the HTML, set it to 'N/A' in the output schema.
+                        - Ensure all values are extracted as plain text except for website_logo_url and product_image_url, which should contain a full URL if available.
+                        - If any field is not present in the HTML, set it to 'N/A' in the output schema.
+                        - If the product subtitle is 'N/A', generate a meaningful and catchy subtitle based on the description (no more than five words). Focus on capturing the product's essence or a key selling point.
+                        - If the product already has a subtitle, transform it into a more catchy, impactful version. Make it shorter, no more than five words, and ensure it reflects the core features or value of the product.
                 "
             ],
             [
