@@ -61,14 +61,20 @@ class ScrapeProductDetails implements ShouldQueue
      */
     protected function cleanupHtml(string $uncleanedHtml): string
     {
-        $html = preg_replace('/\s+/', ' ', $uncleanedHtml); // Remove excess whitespace
+        $tidyConfig = [
+            'indent' => true,
+            'output-xhtml' => true,
+            'wrap' => 200
+        ];
+        // Clean up with Tidy
+        $html = tidy_repair_string($uncleanedHtml, $tidyConfig, 'UTF8');
+
+        $html = preg_replace('/\s+/', ' ', $html); // Remove excess whitespace
         $html = preg_replace('/<!--.*?-->/', '', $html); // Remove comments
         $html = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', '', $html); // Remove JavaScript
         $html = preg_replace('/<style\b[^>]*>(.*?)<\/style>/is', '', $html); // Remove CSS
         $html = preg_replace('/\sstyle=".*?"/i', '', $html); // Remove inline styles
 
-        // Clean up with Tidy
-        $html = tidy_repair_string($html, ['clean' => true, 'output-xhtml' => true]);
 
         // Use DomCrawler to remove specific elements
         $crawler = new Crawler($html);
@@ -156,7 +162,7 @@ class ScrapeProductDetails implements ShouldQueue
                         -Product Price: The price of the product, including any currency symbols or units.
                         -Product Description: A detailed description or summary of the product, typically found in a paragraph or list format.
                         -Product Image URL: The URL of the first image associated with the product, if available.
-                        -Website Logo URL: The direct URL to the website's logo image, often found in the header or main branding area.
+                        -Website Logo URL: The URL of the website's logo image, often found in the header or main branding area.
                         -Company Name: The name of the company that owns or sells the product, generally found near the logo or in the footer.
                     Schema for Output:
                         {
@@ -213,9 +219,10 @@ class ScrapeProductDetails implements ShouldQueue
                         "strict" => true
                     ]
                 ]
-            ])->json('choices.0.message.content');
+            ])->json();
+        dump($response);
 
-        $arrayData = json_decode($response, true);
+        $arrayData = json_decode($response['choices'][0]['message']['content'], true);
 
         return $arrayData;
     }

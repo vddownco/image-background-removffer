@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\ScrapeProductDetails;
 use App\Models\Post;
 use Illuminate\Http\Request;
 
@@ -33,6 +34,7 @@ class PostController extends Controller
         $postId = $post->id;
 
         //TODO: Start the post generating process using job
+        ScrapeProductDetails::dispatch($validated['url']);
 
         //Redirect to the result page
         return redirect()->route('post.show', ['post' => $postId]);
