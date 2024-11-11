@@ -219,10 +219,9 @@ class ScrapeProductDetails implements ShouldQueue
                         "strict" => true
                     ]
                 ]
-            ])->json();
-        dump($response);
+            ])->json('choices.0.message.content');
 
-        $arrayData = json_decode($response['choices'][0]['message']['content'], true);
+        $arrayData = json_decode($response, true);
 
         return $arrayData;
     }
@@ -238,7 +237,8 @@ class ScrapeProductDetails implements ShouldQueue
         // Extract Website Domain
         $parsedUrl = parse_url($url);
         $websiteDomain = $parsedUrl['host'] ?? 'N/A';
-        $logoImageUrl = (strpos($productData['website_logo_url'], 'recoverygear.com.au') !== false) ? 'https:' . $productData['product_image_url'] : $productData['product_image_url'];
+        $productImageUrl = (substr($productData['product_image_url'], 0, 2) === "//") ? 'https:' . $productData['product_image_url'] : $productData['product_image_url'];
+        $logoImageUrl = (substr($productData['website_logo_url'], 0, 2) === "//") ? 'https:' . $productData['website_logo_url'] : $productData['website_logo_url'];
 
         $record = WebsiteDetails::create([
             'name' => $productData['product_name'],
@@ -247,10 +247,12 @@ class ScrapeProductDetails implements ShouldQueue
             'description' => $productData['product_description'],
             'domain' => $websiteDomain,
             'url' => $url,
-            'productImageUrl' => $productData['product_image_url'],
+            'productImageUrl' => $productImageUrl,
             'logoUrl' => $logoImageUrl,
             'companyName' => $productData['company_name'],
         ]);
+
+        dump($record);
 
         return $record->id;
     }
