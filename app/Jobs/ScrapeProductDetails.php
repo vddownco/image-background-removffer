@@ -8,6 +8,7 @@ use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Log;
 use Spatie\Browsershot\Browsershot;
 use Illuminate\Support\Facades\Http;
+use Symfony\Component\DomCrawler\Crawler;
 
 class ScrapeProductDetails implements ShouldQueue
 {
@@ -28,26 +29,74 @@ class ScrapeProductDetails implements ShouldQueue
     {
         try {
             //  Step 1: Get the body of the html or base64 screenshot
-            //$htmlBody = Browsershot::url($this->url)->waitUntilNetworkIdle()->bodyHtml();
-            $base64Data = Browsershot::url($this->url)->waitUntilNetworkIdle()->base64Screenshot();
+            $htmlBody = Browsershot::url($this->url)->waitUntilNetworkIdle()->bodyHtml();
+            //$base64Data = Browsershot::url($this->url)->waitUntilNetworkIdle()->base64Screenshot();
 
-            //  Step 2: Create the prompt for GPT
-            //$gptTextPrompt = $this->generateGptPrompt($htmlBody);
-            $gptVisionPrompt = $this->generateGptVisionPrompt($base64Data);
+            //  Step 2: Cleanup the HTML
+            $cleanedHtml = $this->cleanupHtml($htmlBody);
 
-            //  Step 3: Get the product details from GPT
-            $response = $this->getGPTResponse($gptVisionPrompt);
+            //  Step 3: Create the prompt for GPT
+            $gptTextPrompt = $this->generateGptPrompt($cleanedHtml);
+            //$gptVisionPrompt = $this->generateGptVisionPrompt($base64Data);
 
-            // Step 4: Store the details in the database
+            //  Step 4: Get the product details from GPT
+            $response = $this->getGPTResponse($gptTextPrompt);
+
+            //  Step 5: Store the details in the database
             $productDataId = $this->storeProductData($response, $this->url);
 
-            // Step 5: Dispatch an event with ID
+            //  Step 6: Dispatch an event with ID
 
 
 
         } catch (\Exception $e) {
             Log::error('Error scraping product details: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Remove unneccessary whitespaces, scripts and styles from html
+     * @param string $uncleanedHtml
+     * @return string
+     */
+    protected function cleanupHtml(string $uncleanedHtml): string
+    {
+        $html = preg_replace('/\s+/', ' ', $uncleanedHtml); // Remove excess whitespace
+        $html = preg_replace('/<!--.*?-->/', '', $html); // Remove comments
+        $html = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', '', $html); // Remove JavaScript
+        $html = preg_replace('/<style\b[^>]*>(.*?)<\/style>/is', '', $html); // Remove CSS
+        $html = preg_replace('/\sstyle=".*?"/i', '', $html); // Remove inline styles
+
+        // Clean up with Tidy
+        $html = tidy_repair_string($html, ['clean' => true, 'output-xhtml' => true]);
+
+        // Use DomCrawler to remove specific elements
+        $crawler = new Crawler($html);
+
+        // Remove <nav> , #nav, and .nav elements (e.g., navigation bars)
+        $crawler->filter('nav')->each(function (Crawler $node) {
+            $node->getNode(0)->parentNode->removeChild($node->getNode(0));
+        });
+        $crawler->filter('.nav')->each(function (Crawler $node) {
+            $node->getNode(0)->parentNode->removeChild($node->getNode(0));
+        });
+        $crawler->filter('#nav')->each(function (Crawler $node) {
+            $node->getNode(0)->parentNode->removeChild($node->getNode(0));
+        });
+
+        // Remove <footer> , #footer, and .footer elements (e.g., footer sections)
+        $crawler->filter('footer')->each(function (Crawler $node) {
+            $node->getNode(0)->parentNode->removeChild($node->getNode(0));
+        });
+        $crawler->filter('.footer')->each(function (Crawler $node) {
+            $node->getNode(0)->parentNode->removeChild($node->getNode(0));
+        });
+        $crawler->filter('#footer')->each(function (Crawler $node) {
+            $node->getNode(0)->parentNode->removeChild($node->getNode(0));
+        });
+
+        // Get the cleaned HTML after removal
+        return $crawler->html();
     }
 
     /**
@@ -99,11 +148,34 @@ class ScrapeProductDetails implements ShouldQueue
         return [
             [
                 "role" => "system",
-                "content" => "You are an expert at structured data extraction from HTML. You will be given a HTML from a ecommerce product page and should extract these 'Product Name, Product Subtitle, Product Price, Product Description, Website Logo Image URL, Company Name' information from this HTML and convert it into the given structure."
+                "content" => "
+                    Extract the following information from the provided HTML content and organize it into the specified schema. Only include the relevant data if available in the HTML.
+                    Information to extract:
+                        -Product Name: The main name or title of the product.
+                        -Product Subtitle: Any additional descriptive title or tagline related to the product.
+                        -Product Price: The price of the product, including any currency symbols or units.
+                        -Product Description: A detailed description or summary of the product, typically found in a paragraph or list format.
+                        -Product Image URL: The URL of the first image associated with the product, if available.
+                        -Website Logo URL: The direct URL to the website's logo image, often found in the header or main branding area.
+                        -Company Name: The name of the company that owns or sells the product, generally found near the logo or in the footer.
+                    Schema for Output:
+                        {
+                            product_name: Extracted product name or 'N/A',
+                            product_subtitle: Extracted product subtitle or 'N/A',
+                            product_price: Extracted product price or 'N/A',
+                            product_description: Extracted product description or 'N/A',
+                            product_image_url: Extracted URL for first product image or 'N/A'
+                            website_logo_url: Extracted URL for website logo or 'N/A',
+                            company_name: Extracted company name or 'N/A',
+                        }
+                    Notes for extraction:
+                        Ensure all values are extracted as plain text except for website_logo_url and product_image_url, which should contain a full URL if available.
+                        If any field is not present in the HTML, set it to 'N/A' in the output schema.
+                "
             ],
             [
                 "role" => "user",
-                "content" => $htmlBody
+                "content" => "HTML to Process:" . $htmlBody
             ]
         ];
     }
@@ -127,14 +199,15 @@ class ScrapeProductDetails implements ShouldQueue
                         "schema" => [
                             "type" => "object",
                             "properties" => [
-                                "productName" => ["type" => "string"],
-                                "productSubTitle" => ["type" => "string"],
-                                "productPrice" => ["type" => "string"],
-                                "productDescription" => ["type" => "string"],
-                                "websiteLogoImageBase64Data" => ["type" => "string"],
-                                "companyName" => ["type" => "string"],
+                                "product_name" => ["type" => "string"],
+                                "product_subtitle" => ["type" => "string"],
+                                "product_price" => ["type" => "string"],
+                                "product_description" => ["type" => "string"],
+                                "product_image_url" => ["type" => "string"],
+                                "website_logo_url" => ["type" => "string"],
+                                "company_name" => ["type" => "string"],
                             ],
-                            "required" => ["productName", "productSubTitle", "productPrice", "productDescription", "websiteLogoImageURL", "companyName"],
+                            "required" => ["product_name", "product_subtitle", "product_price", "product_description", "product_image_url", "website_logo_url", "company_name"],
                             "additionalProperties" => false
                         ],
                         "strict" => true
@@ -160,14 +233,15 @@ class ScrapeProductDetails implements ShouldQueue
         $websiteDomain = $parsedUrl['host'] ?? 'N/A';
 
         $record = WebsiteDetails::create([
-            'name' => $productData['productName'],
-            'subTitle' => $productData['productSubTitle'],
-            'price' => $productData['productPrice'],
-            'description' => $productData['productDescription'],
+            'name' => $productData['product_name'],
+            'subTitle' => $productData['product_subtitle'],
+            'price' => $productData['product_price'],
+            'description' => $productData['product_description'],
             'domain' => $websiteDomain,
             'url' => $url,
-            'logoUrl' => $productData['websiteLogoImageBase64Data'],
-            'companyName' => $productData['companyName'],
+            'productImageUrl' => $productData['product_image_url'],
+            'logoUrl' => $productData['website_logo_url'],
+            'companyName' => $productData['company_name'],
         ]);
 
         return $record->id;

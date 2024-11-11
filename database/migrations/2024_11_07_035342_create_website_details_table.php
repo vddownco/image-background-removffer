@@ -18,6 +18,7 @@ return new class extends Migration {
             $table->string('description');
             $table->string('domain');
             $table->string('url');
+            $table->string('productImageUrl');
             $table->string('logoUrl');
             $table->string('companyName');
             $table->timestamps();
