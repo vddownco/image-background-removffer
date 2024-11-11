@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\Post;
 use App\Models\WebsiteDetails;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -49,15 +50,18 @@ class ScrapeProductDetails implements ShouldQueue
             //  Step 6: Remove image backgrounds using Replicate
 
             //  Step 7: Generate HTML for the post
-            //$htmlLayout = $this->generateHtmlForPost($productData,);
+            //$htmlTemplate = $this->generateHtmlForPost($productData,);
 
             //  Step 8: Take the screenshot
-            // $postImageContent = Browsershot::html($htmlLayout)->screenshot();
+            // $postImageContent = Browsershot::html($htmlTemplate)->screenshot();
             // $path = 'screenshots/' . $this->postId . '.png';
             // Storage::disk('public')->put($path, $postImageContent);
-            // $postImageUrl = Storage::url($path);
+            // $postImagePath = Storage::url($path);
 
-            //  Step 9: Dispatch an event with ID
+            //  Step 9: Update imagePath in the post table
+            //Post::where('id', $this->postId)->update(['imagePath' => $postImagePath]);
+
+            //  Step 10: Dispatch an event with ID
 
 
 

@@ -13,6 +13,7 @@ return new class extends Migration {
         Schema::create('posts', function (Blueprint $table) {
             $table->uuid('id');
             $table->string('url');
+            $table->string('imagePath')->default('N/A');
             $table->timestamps();
         });
     }
