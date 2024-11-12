@@ -45,7 +45,7 @@ class ScrapeProductDetails implements ShouldQueue
             $response = $this->getGPTResponse($gptTextPrompt);
 
             //  Step 5: Store the details in the database
-            $productData = $this->storeProductData($response, $this->url);
+            $productData = $this->storeProductData($response, $this->url, $this->postId);
 
             //  Step 6: Remove image backgrounds using Replicate
 
@@ -253,9 +253,11 @@ class ScrapeProductDetails implements ShouldQueue
      * Store the product data in a database.
      *
      * @param array $productData
+     * @param string $url
+     * @param string $postId
      * @return string
      */
-    protected function storeProductData(array $productData, string $url): string
+    protected function storeProductData(array $productData, string $url, string $postId): string
     {
         // Extract Website Domain
         $parsedUrl = parse_url($url);
@@ -263,7 +265,8 @@ class ScrapeProductDetails implements ShouldQueue
         $productImageUrl = (substr($productData['product_image_url'], 0, 2) === "//") ? 'https:' . $productData['product_image_url'] : $productData['product_image_url'];
         $logoImageUrl = (substr($productData['website_logo_url'], 0, 2) === "//") ? 'https:' . $productData['website_logo_url'] : $productData['website_logo_url'];
 
-        $record = WebsiteDetails::create([
+        $post = Post::find($postId);
+        $postData = $post->websiteDetail()->create([
             'name' => $productData['product_name'],
             'subTitle' => $productData['product_subtitle'],
             'price' => $productData['product_price'],
@@ -276,9 +279,9 @@ class ScrapeProductDetails implements ShouldQueue
             'companyPhoneNumber' => $productData['company_phone_number'],
         ]);
 
-        dump($record);
+        dump($postData);
 
-        return $record->id;
+        return $postData->id;
     }
 
     /**
