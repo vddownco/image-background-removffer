@@ -48,6 +48,8 @@ class ScrapeProductDetails implements ShouldQueue
             $productData = $this->storeProductData($response, $this->url, $this->postId);
 
             //  Step 6: Remove image backgrounds using Replicate
+            $modelVersion = 'd504497dccef7c42f91f2c77779a4d14a004f05833980af93c82444423ab67d4';
+            $replicateResponse = $this->removeImageBackground($productData['product_image_url'], $modelVersion);
 
             //  Step 7: Generate HTML for the post
             //$htmlTemplate = $this->generateHtmlForPost($productData,);
@@ -243,6 +245,30 @@ class ScrapeProductDetails implements ShouldQueue
                     ]
                 ]
             ])->json('choices.0.message.content');
+
+        $arrayData = json_decode($response, true);
+
+        return $arrayData;
+    }
+
+    /**
+     * Remove image background using replicate
+     * @param string $imageUrl
+     * @param string $modelVersion
+     * @return array
+     */
+    protected function removeImageBackground($imageUrl, $modelVersion): array
+    {
+        $response = Http::withToken(config('services.replicate.secret'))
+            ->withHeaders([
+                'Content-Type' => 'application/json',
+                'Prefer' => 'wait'
+            ])->post('https://api.replicate.com/v1/predictions', [
+                    'version' => $modelVersion,
+                    'input' => [
+                        'input_image' => $imageUrl
+                    ]
+                ])->json();
 
         $arrayData = json_decode($response, true);
 
