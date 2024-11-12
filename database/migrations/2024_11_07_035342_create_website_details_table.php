@@ -11,7 +11,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('website_details', function (Blueprint $table) {
-            $table->uuid('id');
+            $table->uuid('id')->primary();
             $table->string('name');
             $table->string('subTitle');
             $table->string('price');
@@ -22,7 +22,7 @@ return new class extends Migration {
             $table->string('logoUrl');
             $table->string('companyName');
             $table->string('companyPhoneNumber');
-            $table->foreignId('post_id')->constrained()->onDelete('cascade');
+            $table->foreignUuid('post_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
