@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->uuid('id');
             $table->string('url');
             $table->string('imagePath')->default('N/A');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
