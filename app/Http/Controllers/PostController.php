@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\ScrapeProductDetails;
-use App\Models\Post;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
@@ -27,9 +26,10 @@ class PostController extends Controller
         ]);
 
         //Store the url to the DB
-        $post = new Post;
-        $post->url = $validated['url'];
-        $post->save();
+        $user = auth()->user();
+        $post = $user->posts()->create([
+            'url' => $validated['url']
+        ]);
 
         //Start the post generating process using job
         ScrapeProductDetails::dispatch($validated['url'], $post->id);

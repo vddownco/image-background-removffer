@@ -22,6 +22,7 @@ return new class extends Migration {
             $table->string('logoUrl');
             $table->string('companyName');
             $table->string('companyPhoneNumber');
+            $table->foreignId('post_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
