@@ -37,6 +37,10 @@ return [
 
     'openai' => [
         'secret' => env('OPENAI_SECRET')
+    ],
+
+    'replicate' => [
+        'secret' => env('REPLICATE_API_TOKEN')
     ]
 
 ];
