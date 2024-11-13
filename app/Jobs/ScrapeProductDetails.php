@@ -49,7 +49,8 @@ class ScrapeProductDetails implements ShouldQueue
 
             //  Step 6: Remove image backgrounds using Replicate
             $modelVersion = 'd504497dccef7c42f91f2c77779a4d14a004f05833980af93c82444423ab67d4';
-            $replicateResponse = $this->removeImageBackground($productData['product_image_url'], $modelVersion);
+            $replicateResponse = $this->removeImageBackground($response['product_image_url'], $modelVersion);
+            dump($replicateResponse);
 
             //  Step 7: Generate HTML for the post
             //$htmlTemplate = $this->generateHtmlForPost($productData,);
@@ -268,11 +269,35 @@ class ScrapeProductDetails implements ShouldQueue
                     'input' => [
                         'input_image' => $imageUrl
                     ]
-                ])->json();
+                ]);
 
-        $arrayData = json_decode($response, true);
+        if (!$response->successful()) {
+            throw new \Exception('Failed to create prediction: ' . $response->body());
+        }
 
-        return $arrayData;
+        //Get the prediction ID
+        $predictionId = $response->json()['id'];
+
+        //Poll for the prediction results
+        while (true) {
+            $resultResponse = Http::withToken(config('services.replicate.secret'))
+                ->get('https://api.replicate.com/v1/predictions/' . $predictionId);
+
+            $resultData = $resultResponse->json();
+
+            if ($resultData['status'] === 'succeeded') {
+                return $resultData; //Result success
+            } elseif ($resultData['status'] === 'failed') {
+                throw new \Exception('Prediction failed: ' . $resultResponse->body());
+            }
+
+            //Wait for polling again
+            sleep(2);
+        }
+
+        //$arrayData = json_decode($response, true);
+
+        //return $arrayData;
     }
 
     /**
@@ -305,7 +330,7 @@ class ScrapeProductDetails implements ShouldQueue
             'companyPhoneNumber' => $productData['company_phone_number'],
         ]);
 
-        dump($postData);
+        //dump($postData);
 
         return $postData->id;
     }
