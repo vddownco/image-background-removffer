@@ -260,11 +260,11 @@ class ScrapeProductDetails implements ShouldQueue
      */
     protected function removeImageBackground($imageUrl, $modelVersion): array
     {
-        $response = Http::withToken(config('services.replicate.secret'))
-            ->withHeaders([
-                'Content-Type' => 'application/json',
-                'Prefer' => 'wait'
-            ])->post('https://api.replicate.com/v1/predictions', [
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . config('services.replicate.secret'),
+            'Content-Type' => 'application/json',
+            'Prefer' => 'wait'
+        ])->timeout(60)->post('https://api.replicate.com/v1/predictions', [
                     'version' => $modelVersion,
                     'input' => [
                         'input_image' => $imageUrl
@@ -280,7 +280,8 @@ class ScrapeProductDetails implements ShouldQueue
 
         //Poll for the prediction results
         while (true) {
-            $resultResponse = Http::withToken(config('services.replicate.secret'))
+            $resultResponse = Http::withHeader('Authorization', 'Bearer ' . config('services.replicate.secret'))
+                ->timeout(60)
                 ->get('https://api.replicate.com/v1/predictions/' . $predictionId);
 
             $resultData = $resultResponse->json();
