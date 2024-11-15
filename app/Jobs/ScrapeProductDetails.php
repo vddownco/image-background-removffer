@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use Exception;
 use App\Models\Post;
 use App\Models\WebsiteDetails;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -48,9 +49,9 @@ class ScrapeProductDetails implements ShouldQueue
             $productData = $this->storeProductData($response, $this->url, $this->postId);
 
             //  Step 6: Remove image backgrounds using Replicate
-            $modelVersion = 'd504497dccef7c42f91f2c77779a4d14a004f05833980af93c82444423ab67d4';
-            $replicateResponse = $this->removeImageBackground($response['product_image_url'], $modelVersion);
-            dump($replicateResponse);
+            //$modelVersion = 'd504497dccef7c42f91f2c77779a4d14a004f05833980af93c82444423ab67d4';
+            //$replicateResponse = $this->removeImageBackground($response['product_image_url'], $modelVersion);
+            //dump($replicateResponse);
 
             //  Step 7: Generate HTML for the post
             //$htmlTemplate = $this->generateHtmlForPost($productData,);
@@ -334,6 +335,35 @@ class ScrapeProductDetails implements ShouldQueue
         //dump($postData);
 
         return $postData->id;
+    }
+
+    /**
+     * Remove image background using Photoroom API
+     * @param string $imageFilePath
+     * @param string $apiKey
+     * @param string $postId
+     * @return string
+     */
+    protected function removeBackground(string $imageFilePath, string $apiKey, string $postId): string
+    {
+        $url = 'https://sdk.photoroom.com/v1/segment';
+
+        $response = Http::withHeaders([
+            'X-Api-Key' => $apiKey,
+        ])->attach('image_file', file_get_contents($imageFilePath),basename($imageFilePath))
+        ->post($url);
+
+        // Check if the response is successful
+        if (!$response->successful()) {
+            throw new Exception('Image background removal failed: ' . $response->body());
+        }
+
+        // Store the image in the storage
+        $path = 'products/bg-removed/' . $postId . '.png';
+        Storage::disk('public')->put($path, $response->body());
+
+        // Return image path
+        return $path;
     }
 
     /**
